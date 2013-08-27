@@ -1,0 +1,23 @@
+{
+  "name": "tablesift",
+  "version": "0.0.1",
+  "description": "Sorting HTML tables quickly.",
+  "author": "Ryan Murphy",
+  "license": "BSD",
+  "homepage": "http://github.com/rdmurphy/tablesift",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/rdmurphy/tablesift.git"
+  },
+  "keywords": [
+    "html",
+    "table",
+    "sorting"
+  ],
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-jshint": "~0.6.3",
+    "grunt-contrib-watch": "~0.5.3"
+  }
+}
