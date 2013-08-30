@@ -82,7 +82,7 @@
         return _isString(id) ? document.getElementById(id) : id;
     };
 
-    var _collect_table_rows = function(tableBody) {
+    var _collectTableRows = function(tableBody) {
         var store = [];
 
         _each(tableBody.rows, function(row) {
@@ -133,7 +133,7 @@
         var table = _getDomHook(id);
         var tableHeadCells = table.tHead.rows[0].cells;
         var tableBody = table.tBodies[0];
-        var rowData = _collect_table_rows(tableBody);
+        var rowData = _collectTableRows(tableBody);
 
         _each(tableHeadCells, function(c) {
             _classManager(c, 'siftable', 'add');
