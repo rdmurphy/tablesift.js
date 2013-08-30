@@ -106,6 +106,29 @@
         return store;
     };
 
+    var _classManager = function(el, cln, action) {
+        var classList;
+
+        if (el.className) {
+            classList = el.className.split(' ');
+        } else {
+            classList = [];
+        }
+
+        if (action === 'add') {
+            classList.push(cln);
+        }
+
+        if (action === 'remove') {
+            var classIndex = classList.indexOf(cln);
+            if (classIndex > -1) {
+                classList.splice(classIndex, 1);
+            }
+        }
+
+        el.className = classList.join(' ');
+    };
+
     TableSift.init = function(id) {
         var table = _getDomHook(id);
         var tableHeadCells = table.tHead.rows[0].cells;
@@ -113,6 +136,8 @@
         var rowData = _collect_table_rows(tableBody);
 
         _each(tableHeadCells, function(c) {
+            _classManager(c, 'siftable', 'add');
+
             c.addEventListener('click', function() {
                 var i = c.cellIndex;
                 var prevSortOrder = c.getAttribute('data-sort');
@@ -121,11 +146,23 @@
                     return row[0][i];
                 });
 
+                _each(tableHeadCells, function(cj) {
+                    if (c !== cj) {
+                        cj.setAttribute('data-sort', '');
+                        _classManager(cj, 'siftable-asc', 'remove');
+                        _classManager(cj, 'siftable-des', 'remove');
+                    }
+                });
+
                 if (prevSortOrder === 'asc') {
                     sorted.reverse();
                     c.setAttribute('data-sort', 'des');
+                    _classManager(c, 'siftable-des', 'add');
+                    _classManager(c, 'siftable-asc', 'remove');
                 } else {
                     c.setAttribute('data-sort', 'asc');
+                    _classManager(c, 'siftable-asc', 'add');
+                    _classManager(c, 'siftable-des', 'remove');
                 }
 
                 var frag = document.createDocumentFragment();
