@@ -108,11 +108,11 @@
 
     TableSift.init = function(id) {
         var table = _getDomHook(id);
-        var tableHead = table.tHead;
+        var tableHeadCells = table.tHead.rows[0].cells;
         var tableBody = table.tBodies[0];
         var rowData = _collect_table_rows(tableBody);
 
-        _each(tableHead.getElementsByTagName('th'), function(c) {
+        _each(tableHeadCells, function(c) {
             c.addEventListener('click', function() {
                 var i = c.cellIndex;
                 var prevSortOrder = c.getAttribute('data-sort');
