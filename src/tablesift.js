@@ -6,9 +6,14 @@
     var aProto = Array.prototype;
     var nativeEach = aProto.forEach;
     var nativeMap = aProto.map;
+    var slice = aProto.slice;
 
     var oProto = Object.prototype;
     var toString = oProto.toString;
+
+    var _options = {
+        removeChars: [',', '$']
+    };
 
     var _each = function(col, fn, scope) {
         if (col == null) {
@@ -74,6 +79,18 @@
             });
     };
 
+    var _extend = function(obj) {
+        _each(slice.call(arguments, 1), function(source) {
+            if (source) {
+                for (var prop in source) {
+                    obj[prop] = source[prop];
+                }
+            }
+        });
+
+        return obj;
+      };
+
     var _isString = function(obj) {
         return toString.call(obj) === '[object String]';
     };
@@ -82,10 +99,8 @@
         return _isString(id) ? document.getElementById(id) : id;
     };
 
-    var _collectTableRows = function(tableBody, customSort) {
+    var _collectTableRows = function(tableBody, removeChars, customSort) {
         var store = [];
-
-        console.log(customSort);
 
         _each(tableBody.rows, function(row) {
             var cellStore = [];
@@ -93,16 +108,12 @@
                 var i = cell.cellIndex;
                 var content = cell.textContent;
 
-                if (customSort[i]) {
+                if (customSort && customSort[i]) {
                     cellStore.push(customSort[i](content, cell));
                 } else {
-                    if (content.indexOf(',') !== -1) {
-                        content = content.replace(/,/g, '');
-                    }
-
-                    if (content.indexOf('$') !== -1) {
-                        content = content.replace(/\$/g, '');
-                    }
+                    _each(removeChars, function(rc) {
+                        content = content.replace(rc, '');
+                    });
 
                     cellStore.push(isNaN(+content) ? content : +content);
                 }
@@ -138,14 +149,12 @@
     };
 
     TableSift.init = function(id, options) {
-        if (!options) {
-            options = {};
-        }
+        options = _extend(_options, options);
 
         var table = _getDomHook(id);
         var tableHeadCells = table.tHead.rows[0].cells;
         var tableBody = table.tBodies[0];
-        var rowData = _collectTableRows(tableBody, options.customSort);
+        var rowData = _collectTableRows(tableBody, options.removeChars, options.customSort);
 
         _each(tableHeadCells, function(c) {
             _classManager(c, 'siftable', 'add');
