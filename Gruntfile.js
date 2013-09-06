@@ -7,16 +7,22 @@ module.exports = function(grunt) {
                 report: 'gzip',
                 wrap: 'TableSift'
             },
-            basic: {
-                src: 'build/<%= pkg.name %>.js',
-                dest: 'dest/<%= pkg.name %>.min.js'
+            minified: {
+                files: {
+                    'dest/<%= pkg.name %>.min.js': 'raw/<%= pkg.name %>.js',
+                    'dest/<%= pkg.name %>.underscore.min.js': 'raw/<%= pkg.name %>.underscore.js'
+                }
             },
-            underscore: {
+            full: {
                 options: {
-                    banner: '/* <%= pkg.name %>.underscore - <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+                    beautify: true,
+                    compress: false,
+                    mangle: false
                 },
-                src: 'build/<%= pkg.name %>.underscore.js',
-                dest: 'dest/<%= pkg.name %>.underscore.min.js'
+                files: {
+                    'dest/<%= pkg.name %>.js': 'raw/<%= pkg.name %>.js',
+                    'dest/<%= pkg.name %>.underscore.js': 'raw/<%= pkg.name %>.underscore.js'
+                }
             }
         },
         jshint: {
@@ -32,11 +38,11 @@ module.exports = function(grunt) {
         concat: {
             basic: {
                 src: ['src/utils.js', 'src/tablesift.js'],
-                dest: 'build/<%= pkg.name %>.js'
+                dest: 'raw/<%= pkg.name %>.js'
             },
             underscore: {
                 src: ['src/underscore.js', 'src/tablesift.js'],
-                dest: 'build/<%= pkg.name %>.underscore.js'
+                dest: 'raw/<%= pkg.name %>.underscore.js'
             }
         }
     });
