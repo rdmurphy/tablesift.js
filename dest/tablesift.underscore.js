@@ -1,4 +1,4 @@
-/* tablesift - 0.0.4 2013-09-06 */
+/* tablesift - 0.0.5 2013-09-06 */
 (function(exports, global) {
     global["TableSift"] = exports;
     var _each = _.each;
