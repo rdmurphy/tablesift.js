@@ -82,22 +82,30 @@
         return _isString(id) ? document.getElementById(id) : id;
     };
 
-    var _collectTableRows = function(tableBody) {
+    var _collectTableRows = function(tableBody, customSort) {
         var store = [];
+
+        console.log(customSort);
 
         _each(tableBody.rows, function(row) {
             var cellStore = [];
             _each(row.children, function(cell) {
+                var i = cell.cellIndex;
                 var content = cell.textContent;
-                if (content.indexOf(',') !== -1) {
-                    content = content.replace(/,/g, '');
-                }
 
-                if (content.indexOf('$') !== -1) {
-                    content = content.replace(/\$/g, '');
-                }
+                if (customSort[i]) {
+                    cellStore.push(customSort[i](content, cell));
+                } else {
+                    if (content.indexOf(',') !== -1) {
+                        content = content.replace(/,/g, '');
+                    }
 
-                cellStore.push(isNaN(+content) ? content : +content);
+                    if (content.indexOf('$') !== -1) {
+                        content = content.replace(/\$/g, '');
+                    }
+
+                    cellStore.push(isNaN(+content) ? content : +content);
+                }
             });
 
             store.push([cellStore, row]);
@@ -129,17 +137,22 @@
         el.className = classList.join(' ');
     };
 
-    TableSift.init = function(id) {
+    TableSift.init = function(id, options) {
+        if (!options) {
+            options = {};
+        }
+
         var table = _getDomHook(id);
         var tableHeadCells = table.tHead.rows[0].cells;
         var tableBody = table.tBodies[0];
-        var rowData = _collectTableRows(tableBody);
+        var rowData = _collectTableRows(tableBody, options.customSort);
 
         _each(tableHeadCells, function(c) {
             _classManager(c, 'siftable', 'add');
 
             c.addEventListener('click', function() {
                 var i = c.cellIndex;
+
                 var prevSortOrder = c.getAttribute('data-sort');
 
                 var sorted = _sort(rowData, function(row) {
