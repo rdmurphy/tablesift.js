@@ -13,11 +13,12 @@
         }
         if (nativeEach && col.forEach === nativeEach) {
             col.forEach(fn, scope);
-        }
-        var i, l;
-        for (i = 0, l = col.length; i < l; ++i) {
-            if (i in col) {
-                fn.call(scope, col[i], i, col);
+        } else {
+            var i, l;
+            for (i = 0, l = col.length; i < l; ++i) {
+                if (i in col) {
+                    fn.call(scope, col[i], i, col);
+                }
             }
         }
     };
