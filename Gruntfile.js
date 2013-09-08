@@ -1,16 +1,38 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        uglify: {
+        concat: {
             options: {
                 banner: '/* <%= pkg.name %> - <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
-                report: 'gzip',
-                wrap: 'TableSift'
+                process: {
+                    data: {
+                        version: '<%= pkg.version %>'
+                    }
+                }
+            },
+            basic: {
+                src: ['wrapper/begin.js', 'src/utils.js', 'src/tablesift.js', 'wrapper/end.js'],
+                dest: 'tmp/<%= pkg.name %>.js'
+            },
+            underscore: {
+                src: ['wrapper/begin.js', 'src/underscore.js', 'src/tablesift.js', 'wrapper/end.js'],
+                dest: 'tmp/<%= pkg.name %>.underscore.js'
+            }
+        },
+        jshint: {
+            files: ['gruntfile.js', 'tmp/**/*.js'],
+            options: {
+                eqnull: true
+            }
+        },
+        uglify: {
+            options: {
+                report: 'gzip'
             },
             minified: {
                 files: {
-                    'dest/<%= pkg.name %>.min.js': 'raw/<%= pkg.name %>.js',
-                    'dest/<%= pkg.name %>.underscore.min.js': 'raw/<%= pkg.name %>.underscore.js'
+                    'dest/<%= pkg.name %>.min.js': 'tmp/<%= pkg.name %>.js',
+                    'dest/<%= pkg.name %>.underscore.min.js': 'tmp/<%= pkg.name %>.underscore.js'
                 }
             },
             full: {
@@ -20,30 +42,14 @@ module.exports = function(grunt) {
                     mangle: false
                 },
                 files: {
-                    'dest/<%= pkg.name %>.js': 'raw/<%= pkg.name %>.js',
-                    'dest/<%= pkg.name %>.underscore.js': 'raw/<%= pkg.name %>.underscore.js'
+                    'dest/<%= pkg.name %>.js': 'tmp/<%= pkg.name %>.js',
+                    'dest/<%= pkg.name %>.underscore.js': 'tmp/<%= pkg.name %>.underscore.js'
                 }
-            }
-        },
-        jshint: {
-            files: ['gruntfile.js', 'src/*.js'],
-            options: {
-                eqnull: true
             }
         },
         watch: {
             files: ['<%= jshint.files %>'],
             tasks: ['jshint', 'uglify']
-        },
-        concat: {
-            basic: {
-                src: ['src/utils.js', 'src/tablesift.js'],
-                dest: 'raw/<%= pkg.name %>.js'
-            },
-            underscore: {
-                src: ['src/underscore.js', 'src/tablesift.js'],
-                dest: 'raw/<%= pkg.name %>.underscore.js'
-            }
         }
     });
 
@@ -52,7 +58,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('test', ['jshint']);
-    grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
-    grunt.registerTask('observe', ['watch']);
+    grunt.registerTask('default', ['concat', 'jshint', 'uglify']);
 };
