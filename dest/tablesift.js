@@ -1,6 +1,6 @@
-/* tablesift - 0.0.5 2013-09-06 */
-(function(exports, global) {
-    global["TableSift"] = exports;
+(function(global) {
+    var VERSION = "0.0.6";
+    var TableSift = {};
     var aProto = Array.prototype;
     var nativeEach = aProto.forEach;
     var nativeMap = aProto.map;
@@ -114,7 +114,7 @@
         }
         el.className = classList.join(" ");
     };
-    exports.init = function(id, options) {
+    var init = function(id, options) {
         options = _extend(_options, options);
         var table = _getDomHook(id);
         var tableHeadCells = table.tHead.rows[0].cells;
@@ -154,6 +154,7 @@
             });
         });
     };
-})({}, function() {
-    return this;
-}());
+    TableSift.init = init;
+    TableSift.VERSION = VERSION;
+    global.TableSift = TableSift;
+})(window);

@@ -55,7 +55,7 @@ var _classManager = function(el, cln, action) {
     el.className = classList.join(' ');
 };
 
-exports.init = function(id, options) {
+var init = function(id, options) {
     options = _extend(_options, options);
 
     var table = _getDomHook(id);
