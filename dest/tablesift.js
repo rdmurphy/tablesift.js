@@ -1,5 +1,5 @@
 (function(global) {
-    var VERSION = "0.0.6";
+    var VERSION = "0.0.7";
     var TableSift = {};
     var aProto = Array.prototype;
     var nativeEach = aProto.forEach;
@@ -72,22 +72,26 @@
         return toString.call(obj) === "[object String]";
     };
     var _options = {
+        classAsc: "sift-asc",
+        classDes: "sift-des",
+        customSort: {},
+        noSort: [],
         removeChars: [ ",", "$" ]
     };
     var _getDomHook = function(id) {
         return _isString(id) ? document.getElementById(id) : id;
     };
-    var _collectTableRows = function(tableBody, removeChars, customSort) {
+    var _collectTableRows = function(tableBody, options) {
         var store = [];
         _each(tableBody.rows, function(row) {
             var cellStore = [];
             _each(row.children, function(cell) {
                 var i = cell.cellIndex;
                 var content = cell.textContent;
-                if (customSort && customSort[i]) {
-                    cellStore.push(customSort[i](content, cell));
+                if (options.customSort && options.customSort[i]) {
+                    cellStore.push(options.customSort[i](content, cell));
                 } else {
-                    _each(removeChars, function(rc) {
+                    _each(options.removeChars, function(rc) {
                         content = content.replace(rc, "");
                     });
                     cellStore.push(isNaN(+content) ? content : +content);
@@ -104,27 +108,39 @@
         } else {
             classList = [];
         }
-        if (action === "add") {
-            classList.push(cln);
-        }
-        if (action === "remove") {
-            var classIndex = classList.indexOf(cln);
-            if (classIndex > -1) {
-                classList.splice(classIndex, 1);
+        _each(cln, function(c, i) {
+            if (action[i] === "+") {
+                classList.push(c);
             }
-        }
+            if (action[i] === "-") {
+                var classIndex = classList.indexOf(c);
+                if (classIndex > -1) {
+                    classList.splice(classIndex, 1);
+                }
+            }
+        });
         el.className = classList.join(" ");
     };
+    var _fragBuild = function(sortedRows) {
+        var frag = document.createDocumentFragment();
+        _each(sortedRows, function(s) {
+            frag.appendChild(s[1]);
+        });
+        return frag;
+    };
     var init = function(id, options) {
-        options = _extend(_options, options);
-        var table = _getDomHook(id);
+        options = this.options = _extend(_options, options);
+        var table = this._table = _getDomHook(id);
         var tableHeadCells = table.tHead.rows[0].cells;
         var tableBody = table.tBodies[0];
-        var rowData = _collectTableRows(tableBody, options.removeChars, options.customSort);
+        var rowData = this._rowData = _collectTableRows(tableBody, options);
         _each(tableHeadCells, function(c) {
-            _classManager(c, "siftable", "add");
+            var i = c.cellIndex;
+            if (options.noSort && options.noSort.indexOf(i) > -1) {
+                return false;
+            }
+            _classManager(c, [ "siftable" ], [ "+" ]);
             c.addEventListener("click", function() {
-                var i = c.cellIndex;
                 var prevSortOrder = c.getAttribute("data-sort");
                 var sorted = _sort(rowData, function(row) {
                     return row[0][i];
@@ -132,24 +148,18 @@
                 _each(tableHeadCells, function(cj) {
                     if (c !== cj) {
                         cj.setAttribute("data-sort", "");
-                        _classManager(cj, "siftable-asc", "remove");
-                        _classManager(cj, "siftable-des", "remove");
+                        _classManager(cj, [ options.classAsc, options.classDes ], [ "-", "-" ]);
                     }
                 });
                 if (prevSortOrder === "asc") {
                     sorted.reverse();
                     c.setAttribute("data-sort", "des");
-                    _classManager(c, "siftable-des", "add");
-                    _classManager(c, "siftable-asc", "remove");
+                    _classManager(c, [ options.classDes, options.classAsc ], [ "+", "-" ]);
                 } else {
                     c.setAttribute("data-sort", "asc");
-                    _classManager(c, "siftable-asc", "add");
-                    _classManager(c, "siftable-des", "remove");
+                    _classManager(c, [ options.classAsc, options.classDes ], [ "+", "-" ]);
                 }
-                var frag = document.createDocumentFragment();
-                _each(sorted, function(s) {
-                    frag.appendChild(s[1]);
-                });
+                var frag = _fragBuild(sorted);
                 tableBody = table.removeChild(tableBody).cloneNode();
                 table.appendChild(tableBody).appendChild(frag);
             });
