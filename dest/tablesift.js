@@ -92,7 +92,8 @@
                     cellStore.push(options.customSort[i](content, cell));
                 } else {
                     _each(options.removeChars, function(rc) {
-                        content = content.replace(rc, "");
+                        var re = new RegExp(rc, "g");
+                        content = content.replace(re, "");
                     });
                     cellStore.push(isNaN(+content) ? content : +content);
                 }
