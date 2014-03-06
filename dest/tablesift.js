@@ -1,5 +1,5 @@
 (function(global) {
-    var VERSION = "0.0.7";
+    var VERSION = "0.0.9";
     var TableSift = {};
     var aProto = Array.prototype;
     var nativeEach = aProto.forEach;
@@ -83,6 +83,10 @@
     };
     var _collectTableRows = function(tableBody, options) {
         var store = [];
+        var preppedRemoveChars = _map(options.removeChars, function(rc) {
+            var c = rc.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            return new RegExp(c, "g");
+        });
         _each(tableBody.rows, function(row) {
             var cellStore = [];
             _each(row.children, function(cell) {
@@ -91,9 +95,8 @@
                 if (options.customSort && options.customSort[i]) {
                     cellStore.push(options.customSort[i](content, cell));
                 } else {
-                    _each(options.removeChars, function(rc) {
-                        var re = new RegExp(rc, "g");
-                        content = content.replace(re, "");
+                    _each(preppedRemoveChars, function(rc) {
+                        content = content.replace(rc, "");
                     });
                     cellStore.push(isNaN(+content) ? content : +content);
                 }
