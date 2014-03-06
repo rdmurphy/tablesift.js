@@ -1,5 +1,5 @@
 (function(global) {
-    var VERSION = "0.0.9alpha";
+    var VERSION = "0.0.9";
     var TableSift = {};
     var aProto = Array.prototype;
     var nativeEach = aProto.forEach;

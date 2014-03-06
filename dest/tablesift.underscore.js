@@ -1,5 +1,5 @@
 (function(global) {
-    var VERSION = "0.0.9alpha";
+    var VERSION = "0.0.9";
     var TableSift = {};
     var _each = _.each;
     var _map = _.map;
