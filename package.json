@@ -1,6 +1,6 @@
 {
   "name": "tablesift",
-  "version": "0.0.8-prep",
+  "version": "0.0.8",
   "description": "Sorting HTML tables quickly.",
   "author": "Ryan Murphy",
   "license": "BSD",
