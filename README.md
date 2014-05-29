@@ -9,7 +9,7 @@ How to Use
 ----------
 
 ```js
-Tablesift.init(<id of table> (str) -or- <reference to table> (HTMLTableElement), <options> (object));
+TableSift.init(<id of table> (str) -or- <reference to table> (HTMLTableElement), <options> (object));
 ```
 
 **Default options**
